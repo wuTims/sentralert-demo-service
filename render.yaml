@@ -15,7 +15,7 @@ services:
     # Environment variables
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11
+        value: 3.11.0
 
       - key: ENVIRONMENT
         value: production
@@ -28,10 +28,9 @@ services:
       - key: SENTRY_DSN
         sync: false  # Set to true to sync from your .env, or add manually in dashboard
 
-      # Base URL for scenarios - will be auto-set to your Render URL
-      # Format: https://sentralert-demo-service.onrender.com
+      # Base URL for scenarios
       - key: SCENARIO_BASE_URL
-        sync: false
+        value: https://sentralert-demo-service.onrender.com
 
     # Auto-deploy settings
     autoDeploy: true  # Auto-deploy on git push
