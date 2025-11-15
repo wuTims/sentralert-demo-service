@@ -1,0 +1,43 @@
+services:
+  # FastAPI Web Service
+  - type: web
+    name: sentralert-demo-service
+    runtime: python
+    region: oregon  # or your preferred region: oregon, frankfurt, singapore, ohio
+    plan: free      # free tier
+    branch: main    # or your default branch name
+    buildCommand: "pip install -e ."
+    startCommand: "uvicorn sentralert_demo_service.app:app --host 0.0.0.0 --port $PORT"
+
+    # Health check configuration
+    healthCheckPath: /health
+
+    # Environment variables
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+
+      - key: ENVIRONMENT
+        value: production
+
+      - key: RELEASE
+        value: v1.0.0
+
+      # Sentry DSN - set this as a secret in Render dashboard
+      # or sync from .env file
+      - key: SENTRY_DSN
+        sync: false  # Set to true to sync from your .env, or add manually in dashboard
+
+      # Base URL for scenarios - will be auto-set to your Render URL
+      # Format: https://sentralert-demo-service.onrender.com
+      - key: SCENARIO_BASE_URL
+        sync: false
+
+    # Auto-deploy settings
+    autoDeploy: true  # Auto-deploy on git push
+
+    # Scaling (free tier is limited to 1 instance)
+    numInstances: 1
+
+    # Disk size (free tier gets 512MB RAM, 0.1 CPU)
+    # No additional disk needed for this app
