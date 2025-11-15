@@ -19,6 +19,7 @@ sentry_sdk.init(
     environment=os.getenv("ENVIRONMENT", "production"),
     release=os.getenv("RELEASE", "v1.0.0"),
     traces_sample_rate=1.0,
+    enable_logs=True
 )
 
 app = FastAPI(title="E-Commerce Demo", version="1.0.0")
@@ -157,7 +158,7 @@ async def _fire_requests(path: str, params: dict | None, count: int, method: str
                 pass
 
 @app.post("/scenario/baseline")
-async def scenario_baseline(requests: int = 100):
+async def scenario_baseline(requests: int = 50):
     """Generate normal baseline traffic on active endpoints"""
     async with httpx.AsyncClient(base_url=BASE_URL, timeout=10) as client:
         for _ in range(requests):
@@ -165,9 +166,11 @@ async def scenario_baseline(requests: int = 100):
             params = {"mode": "normal"} if route == "/checkout" else None
             try:
                 await client.get(route, params=params)
+                # Small delay to respect Render free tier rate limits (0.1 CPU)
+                await asyncio.sleep(0.1)
             except httpx.HTTPError:
                 pass
-    
+
     return {"scenario": "baseline", "requests": requests}
 
 @app.post("/scenario/checkout-error-spike")
